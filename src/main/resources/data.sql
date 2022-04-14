@@ -1,0 +1,3 @@
+INSERT INTO CUSTOMERS (id, first_name, last_name, address) VALUES (gen_random_uuid(), 'Test', 'User', 'Test User Street 23');
+INSERT INTO CUSTOMERS (id, first_name, last_name, address) VALUES ('713024c6-615f-466c-9a14-95ba2f147cd3', 'Fixed', 'User', 'Test User Street 23');
+INSERT INTO ACCOUNTS (id, country_code, customer_id) VALUES ('713024c6-615f-466c-9a14-95ba2f147cd4', 'EST', '713024c6-615f-466c-9a14-95ba2f147cd3')
