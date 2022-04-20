@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS balances
      id            UUID PRIMARY KEY,
      currency_code VARCHAR (36) NOT NULL,
      amount        DECIMAL NOT NULL,
+     account_id    UUID,
      CONSTRAINT fk_account FOREIGN KEY ( account_id ) REFERENCES accounts ( id )
   );
 
@@ -30,5 +31,6 @@ CREATE TABLE IF NOT EXISTS transactions
      description   VARCHAR (256) NOT NULL,
      amount        DECIMAL NOT NULL,
      created_at    TIMESTAMP NOT NULL,
+     balance_id    UUID,
      CONSTRAINT fk_balance FOREIGN KEY ( balance_id ) REFERENCES balances ( id )
   );
