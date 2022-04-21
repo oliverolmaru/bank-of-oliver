@@ -6,8 +6,12 @@ import ee.olmaru.bankofoliver.data.models.Account;
 import ee.olmaru.bankofoliver.data.models.Balance;
 import ee.olmaru.bankofoliver.data.models.Customer;
 import ee.olmaru.bankofoliver.data.models.Transaction;
+import ee.olmaru.bankofoliver.data.models.enums.Currency;
+import ee.olmaru.bankofoliver.data.requests.AccountCreateRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +27,34 @@ public class ApiService {
     public Account GetAccount(UUID id) throws NullPointerException{
         Account account = mapper.getAccount(id);
         return account;
+    }
+
+    @Transactional
+    public Account CreateAccount(AccountCreateRequest createRequest) {
+        Customer customer = mapper.getCustomer(UUID.fromString(createRequest.getCustomerId())
+        );
+        Account newAccount = new Account();
+        newAccount.setId(UUID.randomUUID());
+        newAccount.setCountryCode(createRequest.getCountryCode());
+        newAccount.setCustomer(customer);
+        mapper.insertAccount(newAccount);
+
+        for (String currencyStr:
+             createRequest.getCurrencies()) {
+            Currency currency = Currency.valueOf(currencyStr);
+            Balance balance = new Balance();
+
+            Balance newBalance = new Balance();
+            newBalance.setId(UUID.randomUUID());
+            newBalance.setCurrencyCode(currency);
+            newBalance.setAmount(BigDecimal.valueOf(0));
+            newBalance.setAccount(newAccount);
+            mapper.insertBalance(newBalance);
+        }
+
+
+        //TODO - Return proper JSON by nullifying the properties you dont want to send back
+        return  newAccount;
     }
 
     public Customer getCustomer(UUID id) throws NullPointerException{

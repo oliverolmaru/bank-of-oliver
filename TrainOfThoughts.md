@@ -8,3 +8,5 @@
 ## Request Objects vs directly using database objects
 - I usually use directly database objects as much as possible to avoid code duplication, but for better validation and database decoupling (financing has longer lifecycle) I went with explicit request bodies this time
 
+# Java Currency object
+I would consider using javaCurrency objects instead of currency code strings to pass around data, but since it also is constructed from a string & I don't use it for anything else yet, just went with an enum.

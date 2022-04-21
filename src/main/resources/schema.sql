@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS accounts
 CREATE TABLE IF NOT EXISTS balances
   (
      id            UUID PRIMARY KEY,
-     currency_code VARCHAR (36) NOT NULL,
+     currency_code VARCHAR (3) NOT NULL,
      amount        DECIMAL NOT NULL,
      account_id    UUID,
      CONSTRAINT fk_account FOREIGN KEY ( account_id ) REFERENCES accounts ( id )

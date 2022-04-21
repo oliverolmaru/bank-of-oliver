@@ -3,6 +3,7 @@ package ee.olmaru.bankofoliver;
 
 import ee.olmaru.bankofoliver.data.mappers.Mapper;
 import ee.olmaru.bankofoliver.data.models.*;
+import ee.olmaru.bankofoliver.data.models.enums.Currency;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,7 +41,7 @@ public class AccountIntegrationTests {
         UUID id = UUID.randomUUID();
         Balance newBalance = new Balance();
         newBalance.setId(id);
-        newBalance.setCurrencyCode("EUR");
+        newBalance.setCurrencyCode(Currency.EUR);
         newBalance.setAmount(BigDecimal.valueOf(99.99));
         newBalance.setAccount(account);
         mapper.insertBalance(newBalance);
@@ -57,7 +58,7 @@ public class AccountIntegrationTests {
         UUID id = UUID.randomUUID();
         Transaction newTransaction = new Transaction();
         newTransaction.setId(id);
-        newTransaction.setCurrencyCode("EUR");
+        newTransaction.setCurrencyCode(Currency.EUR);
         newTransaction.setAmount(BigDecimal.valueOf(99.99));
         newTransaction.setDescription("My test transaction");
         newTransaction.setDirection(TransactionDirection.IN);
