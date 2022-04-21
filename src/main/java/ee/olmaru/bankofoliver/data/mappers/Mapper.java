@@ -1,6 +1,7 @@
 package ee.olmaru.bankofoliver.data.mappers;
 
 import ee.olmaru.bankofoliver.data.models.*;
+import ee.olmaru.bankofoliver.data.models.enums.TransactionDirection;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -20,6 +21,10 @@ public interface Mapper {
     })
     @Select("SELECT * FROM CUSTOMERS WHERE id = #{id}")
     Customer getCustomer(@Param("id") UUID id);
+
+    @Select("SELECT * FROM CUSTOMERS")
+    @ResultMap(value = "customerResult")
+    List<Customer> getCustomers();
 
     @Insert("INSERT INTO customers(id, first_name, last_name, address) " +
             " VALUES (#{id}, #{firstName}, #{lastName}, #{address})")

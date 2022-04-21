@@ -14,6 +14,7 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.7'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'

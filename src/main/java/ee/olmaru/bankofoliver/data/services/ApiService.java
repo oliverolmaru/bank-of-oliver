@@ -49,17 +49,21 @@ public class ApiService {
             newBalance.setCurrencyCode(currency);
             newBalance.setAmount(BigDecimal.valueOf(0));
             newBalance.setAccount(newAccount);
+            newAccount.addBalance(newBalance);
+
             mapper.insertBalance(newBalance);
         }
-
-
-        //TODO - Return proper JSON by nullifying the properties you dont want to send back
         return  newAccount;
     }
 
     public Customer getCustomer(UUID id) throws NullPointerException{
         Customer customer = mapper.getCustomer(id);
         return customer;
+    }
+
+    public List<Customer> getAllCustomers() {
+        List<Customer> customers = mapper.getCustomers();
+        return customers;
     }
 
     public Transaction GetTransaction(UUID id) throws NullPointerException{

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin
@@ -39,10 +40,20 @@ public class ApiServiceController {
         return ResponseEntity.ok(customer);
     }
 
+    @GetMapping(path = "/customers")
+    public ResponseEntity<?> customerGetAll(){
+        List<Customer> customers = this.apiService.getAllCustomers();
+        return ResponseEntity.ok(customers);
+    }
+
 
     @PostMapping(path = "/accounts")
     public ResponseEntity<?> accountCreate(@RequestBody @Valid AccountCreateRequest request){
-        return ResponseEntity.notFound().build();
+        Account result = this.apiService.CreateAccount(request);
+
+        //TODO - Format response based on challenge requirements
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(path = "/accounts/{id}")

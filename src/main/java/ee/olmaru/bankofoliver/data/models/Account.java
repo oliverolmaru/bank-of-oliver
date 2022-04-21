@@ -1,12 +1,10 @@
 package ee.olmaru.bankofoliver.data.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -16,6 +14,7 @@ import java.util.UUID;
         property = "id")
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account {
     private UUID id;
     private String countryCode;
@@ -23,4 +22,12 @@ public class Account {
     private Customer customer;
     @JsonManagedReference
     private List<Balance> balances;
+
+    public Account() {
+        balances = new ArrayList<>();
+    }
+
+    public void addBalance(Balance balance){
+        balances.add(balance);
+    }
 }

@@ -14,6 +14,7 @@ import java.util.UUID;
         property = "id")
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Balance {
     private UUID id;
     private Currency currencyCode;

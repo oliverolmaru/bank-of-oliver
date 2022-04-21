@@ -4,6 +4,7 @@ package ee.olmaru.bankofoliver;
 import ee.olmaru.bankofoliver.data.mappers.Mapper;
 import ee.olmaru.bankofoliver.data.models.*;
 import ee.olmaru.bankofoliver.data.models.enums.Currency;
+import ee.olmaru.bankofoliver.data.models.enums.TransactionDirection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
