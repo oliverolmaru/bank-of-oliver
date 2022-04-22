@@ -5,6 +5,7 @@ import ee.olmaru.bankofoliver.data.models.enums.TransactionDirection;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @org.apache.ibatis.annotations.Mapper
@@ -20,7 +21,7 @@ public interface Mapper {
             @Result(property = "accounts", column = "id", javaType = List.class, many = @Many(select = "getCustomerAccounts"))
     })
     @Select("SELECT * FROM CUSTOMERS WHERE id = #{id}")
-    Customer getCustomer(@Param("id") UUID id);
+    Optional<Customer> getCustomer(@Param("id") UUID id);
 
     @Select("SELECT * FROM CUSTOMERS")
     @ResultMap(value = "customerResult")
@@ -39,7 +40,7 @@ public interface Mapper {
             @Result(property = "balances", column = "id", javaType = List.class, many = @Many(select = "getAccountBalances"))
     })
     @Select("SELECT * FROM ACCOUNTS WHERE id = #{id}")
-    Account getAccount(@Param("id") UUID id);
+    Optional<Account> getAccount(@Param("id") UUID id);
 
     @Select("SELECT * FROM ACCOUNTS WHERE customer_id = #{customer_id}")
     @ResultMap(value = "accountResult")
@@ -54,15 +55,18 @@ public interface Mapper {
             " VALUES (#{id}, #{currencyCode}, #{amount}, #{account.id})")
     int insertBalance(Balance balance);
 
+    @Update("UPDATE balances SET currency_code=#{currencyCode}, amount=#{amount} WHERE id=#{id}")
+    int updateBalance(Balance balance);
+
     @Results(id = "balanceResult", value = {
             @Result(property = "id", column = "id", id = true),
-            @Result(property = "currencyCode", column = "first_name"),
-            @Result(property = "amount", column = "last_name"),
+            @Result(property = "currencyCode", column = "currency_code"),
+            @Result(property = "amount", column = "amount"),
             @Result(property = "account", column = "account_id", one = @One(select = "ee.olmaru.bankofoliver.data.mappers.Mapper.getAccount")),
             @Result(property = "transactions", column = "id", javaType = List.class, many = @Many(select = "getBalanceTransactions"))
     })
     @Select("SELECT * FROM BALANCES WHERE id = #{id}")
-    Balance getBalance(@Param("id") UUID id);
+    Optional<Balance> getBalance(@Param("id") UUID id);
 
     @Select("SELECT * from BALANCES WHERE account_id = #{account_id}")
     @ResultMap(value = "balanceResult")
@@ -84,7 +88,7 @@ public interface Mapper {
             @Result(property = "createdAt", column = "created_at")
     })
     @Select("SELECT * FROM TRANSACTIONS WHERE id = #{id}")
-    Transaction getTransaction(@Param("id") UUID id);
+    Optional<Transaction> getTransaction(@Param("id") UUID id);
 
     @ResultMap(value = "transactionResult")
     @Select("SELECT * FROM TRANSACTIONS WHERE balance_id = #{balance_id}")
