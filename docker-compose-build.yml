@@ -22,21 +22,6 @@ services:
       - rabbitmq_log:/var/log/rabbitmq/
     networks:
       - default_net
-  api:
-    build: .
-    ports:
-      - "8080:8080"
-    networks:
-      - default_net
-    depends_on:
-      - db
-      - rabbitmq
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - spring_rabbitmq_host=rabbitmq
-      - spring_rabbitmq_port=5672
-      - spring_rabbitmq_username=guest
-    restart: always
 networks:
   default_net:
     driver: bridge
