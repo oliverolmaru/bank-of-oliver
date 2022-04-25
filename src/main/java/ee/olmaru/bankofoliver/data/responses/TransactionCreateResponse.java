@@ -8,6 +8,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TransactionCreateResponse extends Transaction {
+public class TransactionCreateResponse {
+    private Transaction transaction;
     private String accountId;
+
+    public TransactionCreateResponse(Transaction transaction, String accountId) {
+        this.transaction = transaction;
+        this.accountId = accountId;
+    }
 }

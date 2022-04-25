@@ -1,4 +1,4 @@
-package ee.olmaru.bankofoliver;
+package ee.olmaru.bankofoliver.data;
 
 public class DefaultDataIds {
     public static final String customerId = "713024c6-615f-466c-9a14-95ba2f147cd3";

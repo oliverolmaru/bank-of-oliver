@@ -1,5 +1,6 @@
 package ee.olmaru.bankofoliver.data.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -17,13 +18,14 @@ import java.util.UUID;
         property = "id")
 @Getter
 @Setter
+
 public class Transaction {
     private UUID id;
     private TransactionDirection direction;
     private Currency currencyCode;
     private BigDecimal amount;
     private String description;
-    @JsonManagedReference
+    @JsonBackReference
     private Balance balance;
     private LocalDateTime createdAt;
 

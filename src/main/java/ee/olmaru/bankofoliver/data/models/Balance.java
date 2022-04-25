@@ -1,8 +1,8 @@
 package ee.olmaru.bankofoliver.data.models;
 
 import com.fasterxml.jackson.annotation.*;
+import ee.olmaru.bankofoliver.data.exceptions.InsufficientFundsException;
 import ee.olmaru.bankofoliver.data.exceptions.InvalidAmountException;
-import ee.olmaru.bankofoliver.data.exceptions.InvalidCurrencyException;
 import ee.olmaru.bankofoliver.data.models.enums.Currency;
 import ee.olmaru.bankofoliver.data.models.enums.TransactionDirection;
 import lombok.Getter;
@@ -24,10 +24,10 @@ public class Balance {
     private BigDecimal amount;
     @JsonBackReference
     private Account account;
-    @JsonIgnore
+    @JsonManagedReference
     private List<Transaction> transactions;
 
-    public void AddTransactionToAmount(Transaction transaction) throws InvalidAmountException, InvalidCurrencyException {
+    public void AddTransactionToAmount(Transaction transaction) throws InvalidAmountException, InsufficientFundsException {
         if(transaction.getAmount().compareTo(BigDecimal.ZERO) == -1) throw new InvalidAmountException();
         BigDecimal newAmount;
         if(transaction.getDirection() == TransactionDirection.IN){
@@ -36,11 +36,11 @@ public class Balance {
         else if(transaction.getDirection() == TransactionDirection.OUT){
             newAmount = this.amount.subtract(transaction.getAmount());
         }
-        else{
-            throw new InvalidCurrencyException();
+        else {
+            throw new IllegalArgumentException();
         }
 
-        if(newAmount.compareTo(BigDecimal.ZERO) == -1) throw new InvalidAmountException();
+        if(newAmount.compareTo(BigDecimal.ZERO) == -1) throw new InsufficientFundsException();
 
         this.amount = newAmount;
     }
