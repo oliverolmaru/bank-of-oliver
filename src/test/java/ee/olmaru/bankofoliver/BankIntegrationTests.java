@@ -1,9 +1,11 @@
 package ee.olmaru.bankofoliver;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.olmaru.bankofoliver.data.DefaultDataIds;
 import ee.olmaru.bankofoliver.data.exceptions.GenericApiException;
-import ee.olmaru.bankofoliver.data.messaging.Receiver;
+import ee.olmaru.bankofoliver.data.messaging.Amqp;
 import ee.olmaru.bankofoliver.data.models.*;
 import ee.olmaru.bankofoliver.data.models.enums.Currency;
 import ee.olmaru.bankofoliver.data.models.enums.ErrorCode;
@@ -13,11 +15,19 @@ import ee.olmaru.bankofoliver.data.responses.ErrorResponse;
 import ee.olmaru.bankofoliver.data.responses.TransactionCreateResponse;
 import ee.olmaru.bankofoliver.data.services.BankService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -38,10 +48,19 @@ public class BankIntegrationTests {
     private TestRestTemplate restTemplate;
 
     @Autowired
-    private Receiver receiver;
+    private RabbitTemplate rabbitTemplate;
 
     @Autowired
     private BankService bankService;
+
+
+    @BeforeEach
+    public void resetRabbitQueue(){
+        //amqp.getAdmin().purgeQueue("banking.transactions");
+        //amqp.getAdmin().purgeQueue("banking.accounts");
+        //amqp.getAdmin().purgeQueue("banking.balances");
+        //amqp.getAdmin().purgeQueue("banking.customers");
+    }
 
     // Customers
 
@@ -168,12 +187,15 @@ public class BankIntegrationTests {
     }
 
     @Test
-    public void createTransaction_shouldReturnNewTransaction() throws InterruptedException{
+    public void createTransaction_shouldReturnNewTransaction() throws InterruptedException, JsonProcessingException {
         TransactionCreateRequest createRequest = newValidTransactionCreateRequest();
         Transaction transaction = this.bankService.createTransaction(createRequest);
         assertThat(transaction.getId()).isNotNull();
 
-        receiver.getLatch().await(10000,TimeUnit.MILLISECONDS);
+        String queueMessage = (String) rabbitTemplate.receiveAndConvert("banking.transactions",1000);
+        ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+        Transaction receivedTransaction = objectMapper.readValue(queueMessage,Transaction.class);
+        assertThat(receivedTransaction.getId()).isEqualTo(transaction.getId());
 
     }
     

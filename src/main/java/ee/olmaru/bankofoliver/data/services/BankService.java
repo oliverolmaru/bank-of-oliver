@@ -18,6 +18,7 @@ import ee.olmaru.bankofoliver.data.models.enums.ErrorCode;
 import ee.olmaru.bankofoliver.data.models.enums.TransactionDirection;
 import ee.olmaru.bankofoliver.data.requests.AccountCreateRequest;
 import ee.olmaru.bankofoliver.data.requests.TransactionCreateRequest;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,12 +30,12 @@ import java.util.*;
 @Service
 public class BankService {
     private Mapper mapper;
-    private final Amqp amqp;
     private ObjectMapper objectMapper;
+    private RabbitTemplate rabbitTemplate;
 
-    public BankService(Mapper mapper, Amqp amqp) {
+    public BankService(Mapper mapper, RabbitTemplate template) {
+        this.rabbitTemplate = template;
         this.mapper = mapper;
-        this.amqp = amqp;
         this.objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 
@@ -85,6 +86,12 @@ public class BankService {
 
             mapper.insertBalance(newBalance);
 
+        }
+        try{
+            rabbitTemplate.convertAndSend("bank-of-olmaru-exchange","banking.accounts.insert", objectMapper.writeValueAsString(newAccount));
+
+        } catch (JsonProcessingException ex){
+            System.out.println("JSON processing failed - " + ex.getMessage());
         }
         return  newAccount;
     }
@@ -176,8 +183,9 @@ public class BankService {
         mapper.updateBalance(balance);
 
         try{
-            String serialized = objectMapper.writeValueAsString(transaction);
-            amqp.getTemplate().convertAndSend("bank-of-olmaru-exchange","banking.transactions.insert", serialized);
+            rabbitTemplate.convertAndSend("bank-of-olmaru-exchange","banking.transactions.insert", objectMapper.writeValueAsString(transaction));
+            rabbitTemplate.convertAndSend("bank-of-olmaru-exchange","banking.balances.update", objectMapper.writeValueAsString(balance));
+
         } catch (JsonProcessingException ex){
             System.out.println("JSON processing failed - " + ex.getMessage());
         }

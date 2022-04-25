@@ -6,12 +6,26 @@ Bank of Oliver is the fastest bank you can just download from the web.
 - Docker
 - Docker Compose
 
-## Build & Deploy
-1. 
+## Build (& Test)
+1. Open shell in main folder
+2. First start integration testing dependencies
+```docker-compose -f docker-compose-build.yml up -d```
+3. Build app
+```./gradlew build```
+4. Stop testing containers
+```docker-compose -f docker-compose-build.yml down```
 
+## Startup
+1. Run docker compose
+```docker-compose up```
+2. Visit documentation at http://localhost:8080/swagger-ui/index.html
 # Scaling application
 ## Information returned should depend on UI needs
 - Currently each parent object returns all data all the way down, which is wrong depending on the scenario. Right now one clear line is between balance and transactions, because one customer has probably few accounts and balances, but lots of transactions. In the future transactions list should be returned in different call.
+
+# Performance
+
+
 
 #Database considerations
 ## Currency Code is both in balance and transactions
