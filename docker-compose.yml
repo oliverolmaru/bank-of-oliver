@@ -5,35 +5,24 @@ services:
     restart: always
     environment:
       - POSTGRES_PASSWORD=wab#x%vPM4L6sq7u
-    ports:
-      - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
-    networks:
-      - default_net
+    network_mode: host
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
-    ports:
-      - '5672:5672'
-      - '15672:15672'
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq/
-    networks:
-      - default_net
+    network_mode: host
   api:
     build: .
-    ports:
-      - "8080:8080"
-    networks:
-      - default_net
+    network_mode: host
     depends_on:
       - db
       - rabbitmq
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - spring_rabbitmq_host=rabbitmq
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/postgres
       - spring_rabbitmq_port=5672
       - spring_rabbitmq_username=guest
     restart: always
